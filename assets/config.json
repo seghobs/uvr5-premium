@@ -1,0 +1,12 @@
+{
+  "theme": {
+    "file": null,
+    "class": "Franklisi/darkmode"
+  },
+  "lang": {
+    "override": false,
+    "selected_lang": "ar_AR"
+  },
+  "discord_presence": true,
+  "load_custom_settings": false
+}

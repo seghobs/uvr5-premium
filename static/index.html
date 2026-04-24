@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UVR5 Premium Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-outfit { font-family: 'Outfit', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.3); }
+        .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(71, 85, 105, 0.2); }
+        .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+        .glow-violet { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes loading-bar {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(0.7); }
+            100% { transform: scaleX(1); }
+        }
+        .animate-loading-bar {
+            animation: loading-bar 2.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-[#050810] text-slate-200 min-h-screen selection:bg-indigo-500/30" x-data="app()" x-init="setTimeout(() => showSplash = false, 2500)">
+
+    <!-- Animated Premium Splash Screen -->
+    <div x-show="showSplash" 
+         x-transition:leave="transition ease-in-out duration-1000 transform"
+         x-transition:leave-start="translate-y-0"
+         x-transition:leave-end="-translate-y-full"
+         class="fixed inset-0 z-[1000] bg-slate-950 flex items-center justify-center overflow-hidden">
+        
+        <div :class="`bg-${accentColor}-500/10`" class="absolute w-[500px] h-[500px] rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20"></div>
+
+        <div class="relative z-10 text-center space-y-8">
+            <div class="relative inline-block group">
+                <div :class="`bg-${accentColor}-500/20`" class="absolute inset-0 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700 animate-bounce"></div>
+                <div class="relative bg-slate-900 border border-white/10 p-8 rounded-3xl shadow-2xl">
+                    <svg class="w-20 h-20 animate-pulse" :class="`text-${accentColor}-400`" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h1 class="text-5xl font-black font-outfit tracking-tighter text-white">
+                    UVR<span :class="`text-${accentColor}-500`" class="animate-pulse">5</span> Premium
+                </h1>
+                <p class="text-slate-500 font-mono text-xs tracking-[0.3em] uppercase">Advanced AI Audio Separation</p>
+            </div>
+
+            <div class="max-w-[200px] mx-auto space-y-4">
+                <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div :class="`bg-${accentColor}-500`" class="h-full w-full origin-left animate-loading-bar"></div>
+                </div>
+                <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Initializing Engine...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative background elements -->
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="flex h-screen overflow-hidden relative z-10">
+        
+        <!-- Sidebar -->
+        <aside class="w-72 glass border-r border-slate-800 flex flex-col p-6">
+            <div class="flex items-center gap-3 mb-12 px-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                </div>
+                <span class="text-xl font-bold font-outfit tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">UVR5 Premium</span>
+            </div>
+
+            <div class="mb-8">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-4">Core Models</p>
+                <nav class="space-y-1">
+                    <template x-for="tab in tabs.filter(t => t.category === 'model')" :key="tab.id">
+                        <button 
+                            @click="currentTab = tab.id"
+                            :class="currentTab === tab.id ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border-transparent'"
+                            class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-200 group"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center" :class="currentTab === tab.id ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'" x-html="tab.icon"></div>
+                            <span class="text-sm font-medium" x-text="tab.name"></span>
+                        </button>
+                    </template>
+                </nav>
+            </div>
+
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-4">Tools & Stats</p>
+                <nav class="space-y-1">
+                    <template x-for="tab in tabs.filter(t => t.category === 'tool')" :key="tab.id">
+                        <button 
+                            @click="currentTab = tab.id"
+                            :class="currentTab === tab.id ? 'bg-violet-500/10 text-violet-400 border-violet-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border-transparent'"
+                            class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-200 group"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center" :class="currentTab === tab.id ? 'text-violet-400' : 'text-slate-500 group-hover:text-slate-300'" x-html="tab.icon"></div>
+                            <span class="text-sm font-medium" x-text="tab.name"></span>
+                        </button>
+                    </template>
+                </nav>
+            </div>
+
+            <div class="mt-auto pt-6 border-t border-slate-800/50">
+                <div class="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
+                    <p class="text-xs text-indigo-400/80 mb-1">Status</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span class="text-sm font-medium text-slate-300">Ready for Separation</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Settings Modal -->
+        <div x-show="showSettings" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+             @click.self="showSettings = false"
+             style="display: none;">
+            
+            <div class="glass-card w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                    <div class="flex items-center gap-3">
+                        <div :class="`text-${accentColor}-400`"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                        <h3 class="text-xl font-bold font-outfit text-white">Global Settings</h3>
+                    </div>
+                    <button @click="showSettings = false" class="text-slate-500 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="p-8 space-y-8">
+                    <!-- Processing Device -->
+                    <div class="space-y-4">
+                        <label class="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                            Compute Device
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button @click="device = 'CUDA (Auto)'" :class="device === 'CUDA (Auto)' ? `border-${accentColor}-500 bg-${accentColor}-500/10 text-white` : 'border-slate-800 text-slate-500'" class="px-4 py-3 rounded-2xl border text-sm font-bold transition-all">NVIDIA GPU</button>
+                            <button @click="device = 'CPU'" :class="device === 'CPU' ? `border-${accentColor}-500 bg-${accentColor}-500/10 text-white` : 'border-slate-800 text-slate-500'" class="px-4 py-3 rounded-2xl border text-sm font-bold transition-all">CPU Mode</button>
+                        </div>
+                    </div>
+
+                    <!-- Advance Parameters -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-bold text-slate-400 uppercase tracking-widest">Processing Parameters</label>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500">
+                                    <span>Segment Size</span>
+                                    <span :class="`text-${accentColor}-400`" x-text="params.segment_size"></span>
+                                </div>
+                                <input type="range" min="64" max="1024" step="64" x-model="params.segment_size" :class="`accent-${accentColor}-500`" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500">
+                                    <span>Overlap</span>
+                                    <span :class="`text-${accentColor}-400`" x-text="params.overlap"></span>
+                                </div>
+                                <input type="range" min="2" max="16" step="2" x-model="params.overlap" :class="`accent-${accentColor}-500`" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div :class="`bg-${accentColor}-500/20 text-${accentColor}-400`" class="p-2 rounded-xl">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white">Denoise Output</p>
+                                <p class="text-xs text-slate-500">Auto-clean artifacts</p>
+                            </div>
+                        </div>
+                        <button @click="params.denoise = !params.denoise" :class="params.denoise ? `bg-${accentColor}-500` : 'bg-slate-700'" class="w-12 h-6 rounded-full relative transition-all duration-300">
+                            <div :class="params.denoise ? 'translate-x-6' : 'translate-x-1'" class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white/5 border-t border-white/5">
+                    <button @click="showSettings = false" :class="`bg-${accentColor}-500 hover:bg-${accentColor}-600`" class="w-full py-4 rounded-2xl text-white font-bold transition-all">Save & Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+            
+            <header class="flex justify-between items-center mb-12">
+                <div>
+                    <h2 class="text-3xl font-bold font-outfit text-white mb-2" x-text="tabs.find(t => t.id === currentTab).name"></h2>
+                    <p class="text-slate-400" x-text="tabs.find(t => t.id === currentTab).desc"></p>
+                </div>
+                <!-- Right header info -->
+                <div class="flex gap-4">
+                    <!-- Theme Picker -->
+                    <div class="flex items-center gap-2 p-2 rounded-xl glass border border-slate-800">
+                        <template x-for="color in ['indigo', 'emerald', 'rose', 'amber', 'violet']" :key="color">
+                            <button 
+                                @click="accentColor = color" 
+                                :class="`bg-${color}-500 ${accentColor === color ? 'ring-2 ring-white scale-110' : 'opacity-60 hover:opacity-100'}`"
+                                class="w-5 h-5 rounded-full transition-all"
+                            ></button>
+                        </template>
+                    </div>
+                    <button @click="showSettings = true" class="p-2 rounded-xl glass hover:bg-slate-800 transition-colors text-slate-400 hover:text-white border border-slate-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </button>
+                    <div class="px-4 py-2 rounded-xl glass border border-slate-800 flex items-center gap-2">
+                        <span class="text-sm font-medium text-slate-400">Device:</span>
+                        <span class="text-sm font-bold text-indigo-400" x-text="device">CUDA</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Settings & Upload -->
+                <div class="lg:col-span-2 space-y-8">
+                    
+                    <!-- Upload Area -->
+                    <div 
+                        @dragover.prevent="dragOver = true" 
+                        @dragleave.prevent="dragOver = false"
+                        @drop.prevent="handleDrop($event)"
+                        :class="dragOver ? 'border-indigo-500 bg-indigo-500/5' : 'border-slate-800 bg-slate-900/20'"
+                        class="relative group border-2 border-dashed rounded-3xl p-12 transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer"
+                        @click="$refs.fileInput.click()"
+                    >
+                        <input type="file" x-ref="fileInput" @change="handleFileSelect($event)" class="hidden">
+                        
+                        <div class="mb-6 w-20 h-20 rounded-2xl bg-slate-800/50 flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-500">
+                            <svg class="w-10 h-10 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+
+                        <div x-show="queue.length === 0">
+                            <h3 class="text-xl font-bold text-white mb-2">Drop your audio files here</h3>
+                            <p class="text-slate-400">Supported: WAV, MP3, FLAC, OGG | Multiple files supported</p>
+                        </div>
+
+                        <div x-show="queue.length > 0" class="w-full max-w-2xl">
+                            <div class="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto px-4">
+                                <template x-for="(file, index) in queue" :key="index">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/50 group">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div :class="`text-${accentColor}-400`"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg></div>
+                                            <p class="text-sm font-medium text-slate-300 truncate" x-text="file.name"></p>
+                                        </div>
+                                        <button @click.stop="removeFromQueue(index)" class="text-slate-600 hover:text-rose-500 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- URL & Search Input -->
+                        <div class="mt-8 pt-8 border-t border-slate-800/50 w-full max-w-2xl">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Link Input -->
+                                <div class="relative">
+                                    <input 
+                                        type="text" 
+                                        x-model="url" 
+                                        @click.stop
+                                        placeholder="Paste link (YouTube, SoundCloud...)" 
+                                        class="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-5 py-3 pr-12 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
+                                    >
+                                    <button 
+                                        @click.stop="downloadFromUrl()" 
+                                        class="absolute right-2 top-1.5 p-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Search Input -->
+                                <div class="relative z-50" @click.stop @click.away="showSearch = false">
+                                    <input 
+                                        type="text" 
+                                        x-model="searchQuery" 
+                                        @click.stop
+                                        @keyup.enter="searchYT()"
+                                        placeholder="Search YouTube..." 
+                                        class="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-5 py-3 pr-12 text-sm focus:ring-2 focus:ring-violet-500/50 outline-none transition-all"
+                                    >
+                                    <button 
+                                        @click.stop="searchYT()" 
+                                        class="absolute right-2 top-1.5 p-1.5 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+                                    >
+                                        <template x-if="!isSearching">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        </template>
+                                        <template x-if="isSearching">
+                                            <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                        </template>
+                                    </button>
+
+                                    <!-- Premium Search Dropdown with Infinite Scroll -->
+                                    <div x-show="showSearch && (searchResults.length > 0 || isSearching)" 
+                                         x-transition:enter="transition cubic-bezier(0.34, 1.56, 0.64, 1) duration-500"
+                                         x-transition:enter-start="opacity-0 scale-95 -translate-y-4"
+                                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                         x-transition:leave="transition ease-in duration-300"
+                                         x-transition:leave-start="opacity-100 scale-100"
+                                         x-transition:leave-end="opacity-0 scale-95"
+                                         class="absolute z-[100] mt-3 w-full bg-slate-900/90 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-[0_20px_70px_rgba(0,0,0,0.7)] overflow-hidden">
+                                        
+                                        <div class="max-h-[400px] overflow-y-auto custom-scrollbar p-3 space-y-1"
+                                             @scroll="if ($el.scrollTop + $el.clientHeight >= $el.scrollHeight - 50) loadMoreYT()">
+                                            
+                                            <template x-for="(video, index) in searchResults" :key="video.id + index">
+                                                <div @click.stop="selectSearchResult(video)" 
+                                                     class="flex items-center gap-4 p-3 rounded-2xl cursor-pointer hover:bg-white/5 transition-all group relative overflow-hidden">
+                                                    <div class="relative shrink-0">
+                                                        <img :src="video.thumbnail" class="w-24 h-14 object-cover rounded-xl shadow-lg border border-white/5 group-hover:scale-105 transition-transform duration-500">
+                                                        <div class="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white backdrop-blur-sm" x-text="formatTime(video.duration)"></div>
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="text-xs font-bold text-slate-200 line-clamp-2 leading-tight group-hover:text-violet-400 transition-colors" x-text="video.title"></p>
+                                                        <div class="flex items-center gap-2 mt-1.5">
+                                                            <span class="text-[8px] text-slate-500 uppercase tracking-widest font-mono bg-slate-800/50 px-1.5 py-0.5 rounded">YouTube</span>
+                                                            <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                                            <span class="text-[9px] text-slate-400" x-text="video.id"></span>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Hover Glow -->
+                                                    <div class="absolute inset-0 bg-gradient-to-r from-violet-500/0 via-violet-500/5 to-violet-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                                                </div>
+                                            </template>
+
+                                            <!-- Loading indicator at bottom -->
+                                            <div x-show="isSearching" class="p-8 flex flex-col items-center justify-center gap-3">
+                                                <div class="flex gap-1">
+                                                    <div class="w-1.5 h-1.5 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                                                    <div class="w-1.5 h-1.5 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                                    <div class="w-1.5 h-1.5 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                                                </div>
+                                                <span class="text-[10px] text-slate-500 font-medium uppercase tracking-[0.2em]">Searching YouTube</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process Button -->
+                    <button 
+                        @click="startBatchProcess()"
+                        :disabled="queue.length === 0 || isProcessing"
+                        :class="(queue.length === 0 || isProcessing) ? 'opacity-50 grayscale' : `hover:scale-[1.02] shadow-xl shadow-${accentColor}-500/20 active:scale-95`"
+                        class="w-full transition-all duration-300 text-lg font-bold py-5 rounded-2xl flex items-center justify-center gap-3 text-white"
+                        :style="`background: linear-gradient(to right, var(--tw-color-${accentColor}-600), var(--tw-color-${accentColor}-700))`"
+                        id="process-btn"
+                    >
+                        <template x-if="!isProcessing">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <span x-text="queue.length > 1 ? `Run Batch Separation (${queue.length} files)` : 'Run AI Separation'"></span>
+                            </span>
+                        </template>
+                        <template x-if="isProcessing">
+                            <span class="flex items-center gap-3">
+                                <svg class="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <span x-text="processingMessage">Processing...</span>
+                            </span>
+                        </template>
+                    </button>
+
+                    <!-- Processing Info / Progress -->
+                    <div x-show="isProcessing" x-transition class="glass-card rounded-3xl p-8 animate-pulse">
+                        <div class="flex justify-between items-end mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-indigo-400 mb-1">Separating Audio Tracks</p>
+                                <p class="text-lg font-bold text-white" x-text="processingMessage"></p>
+                            </div>
+                            <p class="text-2xl font-bold font-outfit text-white" x-text="Math.round(progress * 100) + '%'"></p>
+                        </div>
+                        <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500" :style="'width: ' + (progress * 100) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div x-show="results.length > 0 && isModelTab()" x-transition class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <h3 class="text-xl font-bold font-outfit text-white">Separated Stems</h3>
+                            <div class="h-px flex-1 bg-slate-800"></div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4">
+                            <template x-for="stem in results" :key="stem">
+                                <div class="glass-card rounded-2xl p-6 group hover:border-indigo-500/40 transition-all duration-300 relative overflow-hidden" x-data="audioPlayer(stem)">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                        
+                                        <!-- File Info -->
+                                        <div class="flex items-center gap-4 min-w-0 flex-1">
+                                            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <template x-if="stem.includes('(Vocals)')">
+                                                        <span class="flex items-center gap-1 bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest border border-rose-500/30 uppercase">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                                            Vocals
+                                                        </span>
+                                                    </template>
+                                                    <template x-if="stem.includes('(Instrumental)')">
+                                                        <span class="flex items-center gap-1 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest border border-emerald-500/30 uppercase">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg>
+                                                            Instrumental
+                                                        </span>
+                                                    </template>
+                                                    <template x-if="!stem.includes('(Vocals)') && !stem.includes('(Instrumental)')">
+                                                        <span class="bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest border border-indigo-500/30 uppercase">Other Stem</span>
+                                                    </template>
+                                                </div>
+                                                <p class="font-bold text-slate-200 truncate pr-4" :title="stem" x-text="stem.replace(/\((Vocals|Instrumental)\)/, '').split('.').slice(0, -1).join('.')"></p>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="text-[10px] text-slate-500" x-text="formatTime(currentTime) + ' / ' + formatTime(duration)"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Controls -->
+                                        <div class="flex items-center gap-4 shrink-0">
+                                            <!-- Play/Pause -->
+                                            <button @click="togglePlay()" class="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20 active:scale-90">
+                                                <template x-if="!isPlaying">
+                                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                                </template>
+                                                <template x-if="isPlaying">
+                                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                                </template>
+                                            </button>
+
+                                            <!-- Volume -->
+                                            <div class="flex items-center gap-2 group/vol">
+                                                <button @click="toggleMute()" class="text-slate-400 hover:text-white transition-colors">
+                                                    <template x-if="volume > 0.5"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg></template>
+                                                    <template x-if="volume <= 0.5 && volume > 0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg></template>
+                                                    <template x-if="volume == 0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zm10.121-6.121l-3.535 3.536m0-3.536l3.535 3.536"></path></svg></template>
+                                                </button>
+                                                <input type="range" min="0" max="1" step="0.01" x-model="volume" @input="updateVolume()" class="w-0 group-hover/vol:w-20 overflow-hidden transition-all duration-300 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                                            </div>
+
+                                            <a :href="'/output/' + stem" download class="p-3 rounded-xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-indigo-500 transition-all border border-slate-700/50">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Waveform Visualization -->
+                                    <div class="mt-6 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 overflow-hidden">
+                                        <div :id="'waveform-' + stem.replace(/[^a-z0-9]/gi, '_')"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Remix Studio Section -->
+                        <div x-show="results.some(s => s.includes('(Vocals)')) && results.some(s => s.includes('(Instrumental)'))" 
+                             class="glass-card rounded-3xl p-8 border border-indigo-500/20 bg-indigo-500/5 relative overflow-hidden">
+                            
+                            <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                                <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                            </div>
+
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-8">
+                                    <div :class="`bg-${accentColor}-500`" class="w-2 h-8 rounded-full"></div>
+                                    <h3 class="text-2xl font-bold font-outfit text-white">Studio Remix & Merge</h3>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
+                                    <!-- Vocal Gain -->
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-end">
+                                            <label class="text-sm font-bold text-rose-400 uppercase tracking-widest flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                                Vocal Gain
+                                            </label>
+                                            <span :class="vocalGain >= 0 ? 'text-emerald-400' : 'text-rose-400'" class="text-2xl font-mono font-bold" x-text="(vocalGain > 0 ? '+' : '') + vocalGain + ' dB'"></span>
+                                        </div>
+                                        <input type="range" min="-30" max="16" step="0.5" x-model="vocalGain" @input="updateGains()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-rose-500">
+                                        <div class="flex justify-between text-[10px] text-slate-600 font-bold uppercase tracking-tighter">
+                                            <span>Mute (-30)</span>
+                                            <span>Original (0)</span>
+                                            <span>Boost (+16)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Instrumental Gain -->
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-end">
+                                            <label class="text-sm font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg>
+                                                Instrumental Gain
+                                            </label>
+                                            <span :class="instGain >= 0 ? 'text-emerald-400' : 'text-rose-400'" class="text-2xl font-mono font-bold" x-text="(instGain > 0 ? '+' : '') + instGain + ' dB'"></span>
+                                        </div>
+                                        <input type="range" min="-30" max="16" step="0.5" x-model="instGain" @input="updateGains()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                                        <div class="flex justify-between text-[10px] text-slate-600 font-bold uppercase tracking-tighter">
+                                            <span>Mute (-30)</span>
+                                            <span>Original (0)</span>
+                                            <span>Boost (+16)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Progress Bar -->
+                                <div x-show="isPreviewing || previewDuration > 0" x-transition class="mb-8 space-y-2">
+                                    <div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                        <span x-text="formatTime(previewCurrentTime)">0:00</span>
+                                        <span x-text="formatTime(previewDuration)">0:00</span>
+                                    </div>
+                                    <div class="relative h-1.5 w-full bg-slate-800 rounded-full overflow-hidden cursor-pointer group" @click="seekPreview($event)">
+                                        <div :class="`bg-${accentColor}-500 shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)]`" 
+                                             class="absolute top-0 left-0 h-full transition-all duration-100 ease-linear"
+                                             :style="`width: ${(previewCurrentTime / previewDuration) * 100}%`"
+                                        ></div>
+                                        <div class="absolute top-0 left-0 h-full w-full group-hover:bg-white/5 transition-colors"></div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <button @click="togglePreview()" 
+                                            class="md:col-span-1 py-5 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 transition-all flex items-center justify-center gap-3 border border-white/10">
+                                        <template x-if="!isPreviewing">
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </template>
+                                        <template x-if="isPreviewing">
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                        </template>
+                                        <span x-text="isPreviewing ? 'Stop Preview' : 'Preview Mix'"></span>
+                                    </button>
+
+                                    <button @click="remix()" 
+                                            :disabled="isRemixing"
+                                            class="md:col-span-3 py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-3">
+                                        <template x-if="!isRemixing">
+                                            <span class="flex items-center gap-3">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                                Remerge & Export Remix
+                                            </span>
+                                        </template>
+                                        <template x-if="isRemixing">
+                                            <span class="flex items-center gap-3">
+                                                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                Mixing Stems...
+                                            </span>
+                                        </template>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Tab Content -->
+                    <div x-show="currentTab === 'leaderboard'" x-transition class="space-y-8">
+                        <div class="glass-card rounded-3xl p-8">
+                            <div class="flex justify-between items-center mb-8">
+                                <h3 class="text-2xl font-bold font-outfit text-white">Model Performance Leaderboard</h3>
+                                <div class="flex gap-2">
+                                    <template x-for="f in ['vocals', 'instrumental', 'drums', 'bass']" :key="f">
+                                        <button @click="fetchLeaderboard(f)" :class="leaderboardFilter === f ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all uppercase tracking-wider" x-text="f"></button>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <div x-html="leaderboardHtml" class="leaderboard-table w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Library Tab Content -->
+                    <div x-show="currentTab === 'library'" x-transition class="space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <template x-for="item in library" :key="item.id">
+                                <div class="glass-card rounded-2xl p-5 border border-slate-800/50 flex flex-col justify-between">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="font-bold text-slate-200 truncate" x-text="item.filename"></p>
+                                                <p class="text-xs text-slate-500" x-text="new Date(item.timestamp).toLocaleString()"></p>
+                                            </div>
+                                        </div>
+                                        <button @click="removeFromLibrary(item.id)" class="text-slate-600 hover:text-rose-500 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-for="stem in item.stems" :key="stem">
+                                            <a :href="'/output/' + stem" download class="text-[10px] bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-indigo-500/50 transition-all flex items-center gap-2">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                <span x-text="stem.includes('Vocals') ? 'Vocals' : (stem.includes('Instrumental') ? 'Inst' : 'Stem')"></span>
+                                            </a>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div x-show="library.length === 0" class="h-64 flex flex-col items-center justify-center text-slate-500">
+                            <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            <p>No processed files in your library yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Model Settings -->
+                <div class="space-y-8">
+                    
+                    <div class="glass-card rounded-3xl p-6 border border-slate-800">
+                        <h3 class="text-lg font-bold font-outfit text-white mb-6 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                            Model Configuration
+                        </h3>
+
+                        <!-- Ensemble Mode Toggle -->
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div :class="ensembleMode ? `bg-${accentColor}-500/20 text-${accentColor}-400` : 'bg-slate-800 text-slate-500'" class="p-2 rounded-xl transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-white">Ensemble Mode</p>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-wider">Multi-Model Quality Boost</p>
+                                </div>
+                            </div>
+                            <button @click="ensembleMode = !ensembleMode" 
+                                    :class="ensembleMode ? `bg-${accentColor}-500` : 'bg-slate-800'"
+                                    class="w-12 h-6 rounded-full relative transition-all duration-300">
+                                <div :class="ensembleMode ? 'translate-x-6' : 'translate-x-1'" class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-lg"></div>
+                            </button>
+                        </div>
+
+                        <!-- Single Model Selection (Standard) -->
+                        <div class="space-y-6" x-show="!ensembleMode" x-transition>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">Select Model</label>
+                                <!-- ... Custom Dropdown Logic ... -->
+                                <div class="relative" x-data="{ open: false, search: '' }">
+                                    <button @click="open = !open" @click.away="open = false" class="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-left text-slate-200 flex justify-between items-center hover:bg-slate-800 transition-all group">
+                                        <div class="flex items-center gap-3 truncate">
+                                            <div :class="`bg-${accentColor}-500/20 text-${accentColor}-400`" class="p-1.5 rounded-lg">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                            </div>
+                                            <span class="font-bold truncate" x-text="selectedModel || 'Choose a model...'"></span>
+                                        </div>
+                                        <svg class="w-5 h-5 text-slate-500 transition-transform duration-300" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="open" class="absolute z-[100] mt-3 w-full bg-slate-900/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden max-h-80 flex flex-col">
+                                        <div class="p-4 border-b border-white/5 bg-white/5">
+                                            <input type="text" x-model="search" placeholder="Search..." class="w-full bg-slate-950/80 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none">
+                                        </div>
+                                        <div class="overflow-y-auto custom-scrollbar p-2">
+                                            <template x-for="m in ((availableModels && availableModels[currentTab]) || []).filter(item => item.toLowerCase().includes(search.toLowerCase()))" :key="m">
+                                                <div @click="selectedModel = m; open = false" class="px-4 py-3 rounded-xl cursor-pointer hover:bg-white/5 text-slate-400 hover:text-white transition-all flex items-center justify-between">
+                                                    <span class="text-sm font-bold truncate" x-text="m"></span>
+                                                    <svg x-show="selectedModel === m" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ensemble Multi-Selection UI -->
+                        <div class="space-y-4" x-show="ensembleMode" x-transition>
+                            <!-- Primary Model -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Primary Model (Roformer Recommended)</label>
+                                <select x-model="ensembleModels[0].model_key" @change="ensembleModels[0].model_type = getModelType(ensembleModels[0].model_key)" 
+                                        class="w-full bg-slate-900 border border-white/5 rounded-2xl p-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select Primary...</option>
+                                    <template x-for="m in availableModels['roformer']" :key="m"><option :value="m" x-text="m"></option></template>
+                                </select>
+                            </div>
+                            <!-- Secondary Model -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Secondary Model (MDX-Net Recommended)</label>
+                                <select x-model="ensembleModels[1].model_key" @change="ensembleModels[1].model_type = getModelType(ensembleModels[1].model_key)"
+                                        class="w-full bg-slate-900 border border-white/5 rounded-2xl p-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select Secondary...</option>
+                                    <template x-for="m in availableModels['mdxnet']" :key="m"><option :value="m" x-text="m"></option></template>
+                                </select>
+                            </div>
+                        </div>
+
+                            <div>
+                                <label class="text-sm font-medium text-slate-400 block mb-2">Output Format</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <template x-for="fmt in formats" :key="fmt">
+                                        <button 
+                                            @click="outFormat = fmt"
+                                            :class="outFormat === fmt ? 'bg-indigo-500 text-white border-indigo-400' : 'bg-slate-950/30 text-slate-500 border-slate-800 hover:border-slate-700'"
+                                            class="px-2 py-2 rounded-lg border text-xs font-bold transition-all"
+                                            x-text="fmt.toUpperCase()"
+                                        ></button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-slate-800/50"></div>
+
+                            <!-- Advanced Settings Slider Example -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-sm font-medium text-slate-400">Segment Size</label>
+                                    <span class="text-sm font-bold text-indigo-400" x-text="params.segment_size"></span>
+                                </div>
+                                <input type="range" x-model="params.segment_size" min="32" max="1024" step="32" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-sm font-medium text-slate-400">Overlap</label>
+                                    <span class="text-sm font-bold text-indigo-400" x-text="params.overlap"></span>
+                                </div>
+                                <input type="range" x-model="params.overlap" min="1" max="10" step="1" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-950/30 border border-slate-800">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-200">Denoise Output</p>
+                                    <p class="text-xs text-slate-500">Clean artifacts</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" x-model="params.denoise" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Helpful Tips -->
+                    <div class="p-8 rounded-3xl bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <svg class="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">Pro Tip</h4>
+                        <p class="text-sm text-slate-300 leading-relaxed">BS-Roformer models usually provide the best vocal extraction results for modern pop and rock tracks.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Notifications -->
+    <div class="fixed bottom-8 right-8 z-[600] space-y-4">
+        <template x-for="notif in notifications" :key="notif.id">
+            <div x-show="notif.show" x-transition class="glass-card px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl border-l-4 border-l-indigo-500">
+                <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-white" x-text="notif.title"></p>
+                    <p class="text-xs text-slate-400" x-text="notif.text"></p>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                currentTab: 'roformer',
+                accentColor: 'indigo',
+                showSettings: false,
+                dragOver: false,
+                queue: [],
+                currentFileIndex: 0,
+                url: '',
+                isProcessing: false,
+                isRemixing: false,
+                isPreviewing: false,
+                showSplash: true,
+                ensembleMode: false,
+                ensembleModels: [
+                    { model_type: 'roformer', model_key: '' },
+                    { model_type: 'mdxnet', model_key: '' }
+                ],
+                searchQuery: '',
+                searchResults: [],
+                isSearching: false,
+                showSearch: false,
+                vocalGain: 0,
+                instGain: 0,
+                progress: 0,
+                previewCurrentTime: 0,
+                previewDuration: 0,
+                previewStartTime: 0,
+                previewOffset: 0,
+                audioCtx: null,
+                vocalNode: null,
+                instNode: null,
+                vocalSource: null,
+                instSource: null,
+                processingMessage: '',
+                results: [],
+                device: 'Loading...',
+                availableModels: {},
+                formats: [],
+                selectedModel: '',
+                outFormat: 'mp3',
+                params: {
+                    segment_size: 256,
+                    overlap: 8,
+                    denoise: true
+                },
+                notifications: [],
+                library: JSON.parse(localStorage.getItem('uvr_library') || '[]'),
+                leaderboardHtml: '',
+                leaderboardFilter: 'vocals',
+                tabs: [
+                    { id: 'roformer', category: 'model', name: 'Roformer', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.34a2 2 0 01-1.783 0l-.691-.34a6 6 0 00-3.86-.517l-2.387.477a2 2 0 00-1.022.547l-1.16 1.16a2 2 0 001.414 3.414h15.414a2 2 0 001.414-3.414l-1.16-1.16z"></path></svg>', desc: 'Best for high-quality vocal and instrumental separation.' },
+                    { id: 'mdx23c', category: 'model', name: 'MDX23C', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>', desc: 'Optimized models for specific audio artifacts and stems.' },
+                    { id: 'mdxnet', category: 'model', name: 'MDX-NET', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>', desc: 'The classic UVR5 models, robust and well-tested.' },
+                    { id: 'vrarch', category: 'model', name: 'VR Arch', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>', desc: 'High-precision vocal extraction architecture.' },
+                    { id: 'demucs', category: 'model', name: 'Demucs', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', desc: 'Industry-standard source separation (v4).' },
+                    { id: 'library', category: 'tool', name: 'Library', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>', desc: 'Your processing history and saved stems.' },
+                    { id: 'leaderboard', category: 'tool', name: 'Leaderboard', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>', desc: 'Model performance and quality rankings.' }
+                ],
+
+                init() {
+                    this.fetchConfig();
+                    this.device = 'CUDA (Auto)';
+                    this.fetchLeaderboard('vocals');
+                },
+
+                isModelTab() {
+                    return this.tabs.find(t => t.id === this.currentTab).category === 'model';
+                },
+
+                formatTime(seconds) {
+                    if (!seconds) return '0:00';
+                    const mins = Math.floor(seconds / 60);
+                    const secs = Math.floor(seconds % 60);
+                    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                },
+
+                async fetchLeaderboard(filter) {
+                    this.leaderboardFilter = filter;
+                    const res = await fetch(`/leaderboard?filter=${filter}`);
+                    const data = await res.json();
+                    this.leaderboardHtml = data.html;
+                },
+
+                addToLibrary(filename, stems) {
+                    const item = { id: Date.now(), filename, stems, timestamp: new Date().toISOString() };
+                    this.library.unshift(item);
+                    localStorage.setItem('uvr_library', JSON.stringify(this.library.slice(0, 50)));
+                },
+
+                removeFromLibrary(id) {
+                    this.library = this.library.filter(i => i.id !== id);
+                    localStorage.setItem('uvr_library', JSON.stringify(this.library));
+                },
+
+                async remix() {
+                    const vocalFile = this.results.find(s => s.includes('(Vocals)'));
+                    const instFile = this.results.find(s => s.includes('(Instrumental)'));
+                    
+                    if (!vocalFile || !instFile) {
+                        this.notify('Error', 'Need both Vocals and Instrumental stems to remix.');
+                        return;
+                    }
+
+                    this.isRemixing = true;
+                    try {
+                        const res = await fetch('/remix', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                vocal_file: vocalFile,
+                                inst_file: instFile,
+                                vocal_gain: this.vocalGain,
+                                inst_gain: this.instGain
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.status === 'success') {
+                            this.results.push(data.filename);
+                            this.notify('Remix Complete', 'Your customized mix is ready!');
+                        } else {
+                            this.notify('Error', data.message);
+                        }
+                    } catch (e) {
+                        this.notify('Error', 'Failed to communicate with remix server.');
+                    } finally {
+                        this.isRemixing = false;
+                    }
+                },
+
+                async togglePreview() {
+                    if (this.isPreviewing) {
+                        this.stopPreview();
+                        return;
+                    }
+
+                    const vocalFile = this.results.find(s => s.includes('(Vocals)'));
+                    const instFile = this.results.find(s => s.includes('(Instrumental)'));
+                    
+                    if (!vocalFile || !instFile) return;
+
+                    this.isPreviewing = true;
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create Gain Nodes
+                    this.vocalNode = this.audioCtx.createGain();
+                    this.instNode = this.audioCtx.createGain();
+                    
+                    // Initial volumes
+                    this.updateGains();
+
+                    // Load audios
+                    const [vocalBuffer, instBuffer] = await Promise.all([
+                        this.loadBuffer('/output/' + vocalFile),
+                        this.loadBuffer('/output/' + instFile)
+                    ]);
+
+                    this.previewDuration = vocalBuffer.duration;
+
+                    this.vocalSource = this.audioCtx.createBufferSource();
+                    this.instSource = this.audioCtx.createBufferSource();
+                    
+                    this.vocalSource.buffer = vocalBuffer;
+                    this.instSource.buffer = instBuffer;
+
+                    this.vocalSource.connect(this.vocalNode).connect(this.audioCtx.destination);
+                    this.instSource.connect(this.instNode).connect(this.audioCtx.destination);
+
+                    this.vocalSource.start(0, this.previewOffset);
+                    this.instSource.start(0, this.previewOffset);
+                    
+                    this.startProgressTimer();
+                    this.vocalSource.onended = () => {
+                        if (this.previewCurrentTime >= this.previewDuration - 0.1) {
+                            this.stopPreview();
+                        }
+                    };
+                },
+
+                stopPreview() {
+                    if (this.vocalSource) { try { this.vocalSource.stop(); } catch(e) {} }
+                    if (this.instSource) { try { this.instSource.stop(); } catch(e) {} }
+                    if (this.audioCtx) this.audioCtx.close();
+                    this.vocalSource = null;
+                    this.instSource = null;
+                    this.audioCtx = null;
+                    this.isPreviewing = false;
+                },
+
+                updateGains() {
+                    if (this.vocalNode) {
+                        // dB to linear: 10^(dB/20)
+                        this.vocalNode.gain.value = Math.pow(10, this.vocalGain / 20);
+                    }
+                    if (this.instNode) {
+                        this.instNode.gain.value = Math.pow(10, this.instGain / 20);
+                    }
+                },
+
+                async loadBuffer(url) {
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    return await this.audioCtx.decodeAudioData(arrayBuffer);
+                },
+
+                seekPreview(event) {
+                    if (!this.previewDuration) return;
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const percent = x / rect.width;
+                    const seekTime = percent * this.previewDuration;
+                    
+                    if (this.isPreviewing) {
+                        this.stopPreview();
+                        this.previewOffset = seekTime;
+                        this.togglePreview();
+                    } else {
+                        this.previewOffset = seekTime;
+                        this.previewCurrentTime = seekTime;
+                    }
+                },
+
+                startProgressTimer() {
+                    this.previewStartTime = this.audioCtx.currentTime;
+                    const update = () => {
+                        if (!this.isPreviewing) return;
+                        this.previewCurrentTime = this.previewOffset + (this.audioCtx.currentTime - this.previewStartTime);
+                        if (this.previewCurrentTime >= this.previewDuration) {
+                            this.stopPreview();
+                            this.previewCurrentTime = 0;
+                            this.previewOffset = 0;
+                        }
+                        requestAnimationFrame(update);
+                    };
+                    requestAnimationFrame(update);
+                },
+
+                async fetchConfig() {
+                    // Start hide splash sequence
+                    setTimeout(() => {
+                        this.showSplash = false;
+                    }, 2500);
+
+                    const res = await fetch('/models');
+                    const data = await res.json();
+                    this.availableModels = data;
+                    this.formats = data.formats;
+                    this.selectedModel = data.roformer[0];
+                },
+
+                handleFileSelect(e) {
+                    this.queue = [...this.queue, ...Array.from(e.target.files)];
+                    this.results = [];
+                },
+
+                handleDrop(e) {
+                    this.dragOver = false;
+                    this.queue = [...this.queue, ...Array.from(e.dataTransfer.files)];
+                    this.results = [];
+                },
+
+                removeFromQueue(index) {
+                    this.queue.splice(index, 1);
+                },
+
+                async uploadFile(file) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const res = await fetch('/upload', { method: 'POST', body: formData });
+                    return await res.json();
+                },
+
+                async downloadFromUrl() {
+                    if (!this.url) return;
+                    this.isProcessing = true;
+                    this.processingMessage = 'Fetching audio from URL...';
+                    this.progress = 0.1;
+                    
+                    try {
+                        const res = await fetch(`/download?url=${encodeURIComponent(this.url)}`, { method: 'POST' });
+                        const data = await res.json();
+                        this.queue.push({ name: data.filename, path: data.file_path, size: 0 });
+                        this.notify('Success', 'Audio downloaded and added to queue');
+                    } catch (e) {
+                        this.notify('Error', 'Failed to download audio');
+                    } finally {
+                        this.isProcessing = false;
+                        this.progress = 0;
+                    }
+                },
+
+                async searchYT() {
+                    if (!this.searchQuery) return;
+                    this.isSearching = true;
+                    this.showSearch = true;
+                    this.searchResults = [];
+                    try {
+                        const res = await fetch(`/search?q=${encodeURIComponent(this.searchQuery)}&max_results=5`);
+                        this.searchResults = await res.json();
+                        if (this.searchResults.length === 0) {
+                            this.notify('No Results', 'Could not find any videos for your query.');
+                        }
+                    } catch (e) {
+                        this.notify('Search Error', 'Failed to fetch search results.');
+                    } finally {
+                        this.isSearching = false;
+                    }
+                },
+
+                async loadMoreYT() {
+                    if (this.isSearching || this.searchResults.length === 0) return;
+                    this.isSearching = true;
+                    const nextCount = this.searchResults.length + 5;
+                    try {
+                        const res = await fetch(`/search?q=${encodeURIComponent(this.searchQuery)}&max_results=${nextCount}`);
+                        const newResults = await res.json();
+                        const existingIds = new Set(this.searchResults.map(r => r.id));
+                        const filtered = newResults.filter(r => !existingIds.has(r.id));
+                        this.searchResults = [...this.searchResults, ...filtered];
+                    } catch (e) {
+                        console.error('Failed to load more results');
+                    } finally {
+                        this.isSearching = false;
+                    }
+                },
+
+                async selectSearchResult(video) {
+                    this.showSearch = false;
+                    this.isProcessing = true;
+                    this.processingMessage = `Adding ${video.title}...`;
+                    this.progress = 0.1;
+                    
+                    try {
+                        const res = await fetch(`/download?url=${encodeURIComponent(video.url)}`, { method: 'POST' });
+                        const data = await res.json();
+                        this.queue.push({ name: data.filename, path: data.file_path, size: 0 });
+                        this.notify('Added to Queue', video.title);
+                        this.searchQuery = '';
+                    } catch (e) {
+                        this.notify('Error', 'Failed to process selected video');
+                    } finally {
+                        this.isProcessing = false;
+                        this.progress = 0;
+                    }
+                },
+
+                async startBatchProcess() {
+                    this.isProcessing = true;
+                    this.results = [];
+                    this.currentFileIndex = 0;
+                    
+                    for (let i = 0; i < this.queue.length; i++) {
+                        const file = this.queue[i];
+                        this.currentFileIndex = i;
+                        this.processingMessage = `[${i+1}/${this.queue.length}] Processing ${file.name}...`;
+                        
+                        let filePath = file.path;
+                        if (!filePath) {
+                            const uploadRes = await this.uploadFile(file);
+                            filePath = uploadRes.file_path;
+                        }
+
+                        let payload, endpoint;
+                        if (this.ensembleMode) {
+                            endpoint = '/ensemble';
+                            payload = {
+                                audio_path: filePath,
+                                out_format: this.outFormat,
+                                models: this.ensembleModels.filter(m => m.model_key !== "")
+                            };
+                        } else {
+                            endpoint = '/separate';
+                            payload = {
+                                model_type: this.currentTab,
+                                model_key: this.selectedModel,
+                                audio_path: filePath,
+                                out_format: this.outFormat,
+                                params: this.params
+                            };
+                        }
+
+                        const res = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const { task_id } = await res.json();
+                        
+                        await this.pollStatus(task_id, file.name);
+                    }
+                    
+                    this.isProcessing = false;
+                    this.queue = []; // Clear queue after batch
+                    this.notify('Batch Complete', `Successfully processed files.`);
+                },
+
+                getModelType(key) {
+                    for (const tab in this.availableModels) {
+                        if (this.availableModels[tab].includes(key)) return tab;
+                    }
+                    return 'roformer';
+                },
+
+                async pollStatus(taskId, fileName) {
+                    return new Promise((resolve) => {
+                        const interval = setInterval(async () => {
+                            const res = await fetch(`/status/${taskId}`);
+                            const data = await res.json();
+                            
+                            this.progress = data.progress;
+                            this.processingMessage = `[${this.currentFileIndex + 1}/${this.queue.length}] ${data.message}`;
+
+                            if (data.status === 'completed') {
+                                clearInterval(interval);
+                                this.results = [...this.results, ...data.stems];
+                                this.addToLibrary(fileName, data.stems);
+                                resolve();
+                            } else if (data.status === 'failed') {
+                                clearInterval(interval);
+                                this.notify('Error', `Failed to process ${fileName}: ${data.error}`);
+                                resolve();
+                            }
+                        }, 1000);
+                    });
+                },
+
+                notify(title, text) {
+                    const id = Date.now();
+                    this.notifications.push({ id, title, text, show: true });
+                    setTimeout(() => {
+                        const idx = this.notifications.findIndex(n => n.id === id);
+                        if (idx !== -1) this.notifications[idx].show = false;
+                    }, 5000);
+                },
+
+                formatBytes(bytes, decimals = 2) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const dm = decimals < 0 ? 0 : decimals;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+                },
+
+                formatTime(seconds) {
+                    if (!seconds) return '0:00';
+                    const mins = Math.floor(seconds / 60);
+                    const secs = Math.floor(seconds % 60);
+                    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+            }
+        }
+
+        function audioPlayer(stem) {
+            return {
+                isPlaying: false,
+                currentTime: 0,
+                duration: 0,
+                progressPercent: 0,
+                volume: 1,
+                lastVolume: 1,
+                ws: null,
+
+                init() {
+                    this.$nextTick(() => {
+                        this.ws = WaveSurfer.create({
+                            container: '#waveform-' + stem.replace(/[^a-z0-9]/gi, '_'),
+                            waveColor: '#475569',
+                            progressColor: '#6366f1',
+                            cursorColor: '#818cf8',
+                            barWidth: 2,
+                            barRadius: 3,
+                            responsive: true,
+                            height: 60,
+                            url: '/output/' + stem
+                        });
+
+                        this.ws.on('ready', () => {
+                            this.duration = this.ws.getDuration();
+                        });
+
+                        this.ws.on('audioprocess', () => {
+                            this.currentTime = this.ws.getCurrentTime();
+                            this.progressPercent = (this.currentTime / this.duration) * 100;
+                        });
+
+                        this.ws.on('finish', () => {
+                            this.isPlaying = false;
+                        });
+                    });
+                },
+
+                togglePlay() {
+                    this.ws.playPause();
+                    this.isPlaying = !this.isPlaying;
+                },
+
+                toggleMute() {
+                    this.ws.setMuted(!this.ws.getMuted());
+                    this.volume = this.ws.getMuted() ? 0 : this.lastVolume;
+                },
+
+                updateVolume() {
+                    this.ws.setVolume(this.volume);
+                    this.lastVolume = this.volume;
+                },
+
+                formatTime(seconds) {
+                    return this.$parent.formatTime(seconds);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
