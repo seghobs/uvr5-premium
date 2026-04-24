@@ -1,49 +1,48 @@
-<h1 align="center"><b> 🎵 UVR5 UI 🎵 </b></h1>
+<h1 align="center"><b> 🎵 UVR5 Premium 🎵 </b></h1>
 <div align="center">
 
-[![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Eddycrack864/UVR5-UI)
+[![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/seghobs/uvr5-premium)
 
-![cutecounter](https://count.nett.moe/get/uvr5_ui_colab/img?theme=rule34)
-
-[![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)
-[![Open In Kaggle](https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=Kaggle&logoColor=white)](https://www.kaggle.com/code/eddycrack864/uvr5-ui)
-<a target="_blank" href="https://lightning.ai/new?repo_url=https%3A%2F%2Fgithub.com%2FEddycrack864%2FUVR5-UI%2Fblob%2Fmain%2FUVR_UI.ipynb">
-<img src="https://pl-bolts-doc-images.s3.us-east-2.amazonaws.com/app-2/studio-badge.svg" alt="Open in Studio"/></a>
-[![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Eddycrack864/UVR5-UI/blob/main/LICENSE)
-[![Discord](https://img.shields.io/badge/Community-Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/aihub)
-
-This project is based on [python-audio-separator](https://github.com/karaokenerds/python-audio-separator) (a CLI version of UVR5). This project was originally created for the [AI ​​HUB](https://discord.gg/aihub) community.
-
-</div>
-<div align="center">
-  
-[![Hugging Face](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-xl-dark.svg?download=true)](https://huggingface.co/spaces/TheStinger/UVR5_UI)
-
-You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
-
-</div>
- 
-<div align="center">
-
-**[Docs](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/docs.md) / [Troubleshooting](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md)**
+### **The Most Advanced Audio Separation Dashboard**
+*Powered by FastAPI, Alpine.js, and Modern AI Models*
 
 </div>
 
-## Features: 
-* User Friendly Interface
-* All VR Arch Models
-* All MDX-NET Models
-* Demucs v4 Models
-* MDX23C Models
-* Mel-Band Roformer Models
-* BS Roformer Models
-* Music Source Separation Models
-* VIP Models
-* Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
-* Batch Separation
-* Available in multiple languages
-* Colab/Kaggle/Lightning.ai support
-* Windows/Linux support
+---
+
+## 🚀 UVR5 Premium Enhancements
+
+We have completely overhauled the original UVR5-UI to provide a **Premium, High-Performance experience**.
+
+### **✨ Key Features:**
+*   **💎 Premium Glassmorphism UI:** A stunning, modern dashboard with cubic-bezier animations, dark mode, and responsive layout.
+*   **🔍 Integrated YouTube Search:** Search for any video directly within the app and add it to your processing queue instantly.
+*   **⚡ High-Performance FastAPI Backend:** Replaced legacy Gradio with a lightning-fast asynchronous API for better stability and lower latency.
+*   **🎚️ Studio Remix & Merge:** A professional-grade mixing panel with real-time gain control (dB), Web Audio API previewing, and high-fidelity export.
+*   **📈 Model Performance Leaderboard:** Real-time S-Tier and Elite model rankings based on SDR (Signal-to-Distortion) scores.
+*   **🔄 Infinite Scroll Discovery:** Browse YouTube results and your library with a seamless infinite loading experience.
+*   **🧠 Intelligent Ensemble Mode:** Combine multiple S-Tier models (Roformer + MDX-Net) for the ultimate separation quality.
+*   **🛠️ Optimized Processing:** Improved z-index management, batch processing with progress tracking, and error handling.
+
+## 🛠️ Requirements & Installation
+
+### Hardware:
+*   **GPU:** NVIDIA RTX 2000 Series or higher (Highly Recommended).
+*   **RAM:** 16GB+ for best performance with large models.
+
+### Installation:
+1.  **Clone:** `git clone https://github.com/seghobs/uvr5-premium.git`
+2.  **Install:** Run `UVR5-UI-installer.bat`.
+3.  **Launch:** Run `run_modern.bat` to start the Premium Dashboard.
+
+---
+
+## 🏗️ Core Separation Engine
+UVR5 Premium supports the industry's most advanced architectures:
+*   **BS/Mel-Roformer:** The gold standard for vocal and instrumental separation.
+*   **MDX23C:** Cutting-edge architectures for high-fidelity stem extraction.
+*   **MDX-NET:** The classic, robust engine for all-around performance.
+*   **VR Arch / Demucs v4:** Specialized models for drums, bass, and complex mixes.
 
 ## Requirements
 
